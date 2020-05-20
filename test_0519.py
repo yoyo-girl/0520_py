@@ -33,8 +33,8 @@ for t in T:
             abc[4] = (abc[4].replace(',', ''))
 
         print(abc)
-#
-#
+
+        
 # #     try:
 # #            cursor.execute('INSERT INTO margin_trading_short_selling(stockiid, date, foreign_investment, investment_bank, local_company)' \
 # #                            '' 'VALUES(%s, %s, %s, %s, %s)', abc)
