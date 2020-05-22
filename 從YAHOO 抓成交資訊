@@ -1,0 +1,8 @@
+#從YAHOO 抓成交資訊
+import yfinance as yf
+stk = yf.Ticker('4927.TW')
+# 取得 2000 年至今的資料
+data = stk.history(start = '2016-10-01')
+# 簡化資料，只取開、高、低、收以及成交量
+data = data[['Open', 'High', 'Low', 'Close', 'Volume']]
+print(data)
