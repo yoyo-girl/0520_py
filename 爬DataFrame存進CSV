@@ -1,0 +1,35 @@
+# -*- encoding: utf8-*-
+import os, requests,pandas as pd
+import yfinance as yf
+from bs4 import BeautifulSoup
+import time
+import random
+
+#stock_id可自換，我只列了EPS>6的前200名
+stock_id = [3008,6669,4966,6488,3293,6409,6415,1565,3406,5274,2227,8299,2207,6121,3533,3563,5904,5536,6510,4137,3611,8070,8436,6670,2915,2059,2327,2357,1256,5269,1476,3665,2729,5278,8464,8437,2404,2454,6613,2474,1590,5287,1264,4439,2492,4420,2379,2330,6414,3034,8406,5289,6176,6462,2439,1537,6803,2929,4947,3324,5871,4803,3044,2548,1558,3131,5534,6569,8422,5283,3105,2707,2395,6666,1439,8016,8446,4766,2383,2912,1580,6269,6456,8454,4958,6643,4438,2732,1707,4536,5288,5434,6452,8416,6538,3152,9945,9941,4163,8083,9921,3708,2345,6294,8341,2308,6568,8480,8081,2428,1477,2228,3558,3130,2458,9910,2385,3570,9914,2317,5903,8499,6213,6230,4190,4736,6596,2231,4580,5306,5299,6472,8279,3413,6683,6561,9802,3548,5474,8482,6491,8210,1582,4551,9951,6239,3023,4938,6214,3529,6146,3376,6504,1268,3661,4119,8462,1515,4430,6278,4126,6274,1788,8066,3596,6672,4402,6641,6111,4572,6192,4107,2752,3004,3479,2377,2348,5263,3653,4763,6486,6411,6290,5234,5312,6147,3617,3227,4953,6435,6451,3526,8114,2373,3010,1232,3455,8466,5469,6277,5604,2049,8942]
+
+for d in stock_id:
+    resource_path = r'./券商分點買賣超60天/%s' % (d)
+    if not os.path.exists(resource_path):
+        os.mkdir(resource_path)
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
+    url = "https://jdata.yuanta.com.tw/z/zc/zco/zco_%d_8.djhtm" % (d)
+    res = requests.get(url, headers=headers)
+    soup = BeautifulSoup(res.text, 'html.parser')
+    f = soup.select('td[class="t4t1"]')
+    for j in (0,2,4,6,8,10,12,14,16,18,20,22,24,26,28) :
+        for i in f[j] :
+            Buy_firm_text = i.text
+            Buy_firm_url = 'https://jdata.yuanta.com.tw'+i['href']+'&C=3'
+            Buy_firm_res = requests.get( Buy_firm_url, headers=headers )
+            Buy_firm_soup = BeautifulSoup(Buy_firm_res.text, 'html.parser')
+            Buy_firm_content = Buy_firm_soup.select('table[id="oMainTable"]')
+            df_list = pd.read_html(str(Buy_firm_content[0]))
+            df = pd.DataFrame(df_list[0])
+            df = df.set_index(0)
+            # 設定column名稱
+            df.row = df.iloc[0]
+            try:
+                df.to_csv(r'%s/%s.csv' % (resource_path, Buy_firm_text), index=0, encoding='big5')
+            except:
+                time.sleep(random.randint(3,5))
