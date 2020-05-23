@@ -8,29 +8,6 @@ import random
 import pymysql
 # from sqlalchemy import create_engine
 
-# # 建立表格
-# conn = pymysql.connect(host='127.0.0.1',port=3306,user='root',passwd='0918554022',db='Project_test')
-# cur = conn.cursor()
-# sql = '''
-#   CREATE TABLE `Project_test`.`basic_test` (
-#   `stockiid`          SMALLINT UNSIGNED   NOT NULL,
-#   `season`            VARCHAR(10)  NOT NULL,
-#   `net_income`          INT UNSIGNED    NULL,
-#   `total_assets`        INT UNSIGNED    NULL,
-#   `operating_margin`      INT UNSIGNED    NULL,
-#   `account_receivable_rate`      DECIMAL(4,2)    NULL,
-#   `ROA`             DECIMAL(4,2)    NULL,
-#   `ROE`             DECIMAL(4,2)    NULL,
-#   `current_assets`        DECIMAL(5,1)    NULL,
-#   `current_liabilities`     DECIMAL(5,1)    NULL,
-#   `quick_ratio`         DECIMAL(4,1)    NULL,
-#   `total_debts`            DECIMAL(5,1)    NULL,
-#   `stock_price_per`       DECIMAL(6,2)    NULL,
-#   `share_capital`         INT UNSIGNED    NULL);
-#   '''
-# cur.execute(sql)
-# cur.close()
-# conn.close()
 
 Stockiid = {'台泥': '1101'}
 # 取得所有股票代碼
@@ -168,6 +145,7 @@ for stock_iid in stock_iids:
         print("股票代碼:%s，第%d支未完成，完成比例:%f is ok" % (stock_iid, i - 1, k))
 print(stop_list)
 
+
 # # 丟資料進資料庫
 # # 方法一
 # connection = pymysql.connect(host='127.0.0.1', user='root', password='0918554022', db='Project_test')
@@ -183,6 +161,8 @@ print(stop_list)
 # for i in result:
 #     print(i)
 # connection.close()
+
+
 # # 方法二
 # db_data = 'mysql+mysqlconnector://' + 'root' + ':' + '0000' + '@' + 'localhost' + ':3306/' + 'Project_test' + '?charset=utf8mb4'
 # engine = create_engine(db_data)
