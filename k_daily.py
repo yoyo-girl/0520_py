@@ -1,6 +1,7 @@
 import yfinance as yf
 import datetime
 import os
+
 Stockiid = {'台泥': '1101', '亞泥': '1102', '嘉泥': '1103', '環泥': '1104', '幸福': '1108', '信大': '1109', '東泥': '1110',
             '味全': '1201', '味王': '1203', '大成': '1210', '大飲': '1213', '卜蜂': '1215', '統一': '1216', '愛之味': '1217',
             '泰山': '1218', '福壽': '1219', '台榮': '1220', '福懋油': '1225', '佳格': '1227', '聯華': '1229', '聯華食': '1231',
@@ -254,14 +255,12 @@ stock_iids = []
 for i in tmp_list:
     stock_iids.append(i)
 
-# 存放資料夾
-path = "C:/Users/User/PycharmProjects/project_pre/各股日資料"
-
 for i in stock_iids:
-    df = yf.Ticker('%s.TW'%i).history(period='max')
+    resource_path = r'./各股日資料/%s' % (i)
+    if not os.path.exists(resource_path):
+        os.mkdir(resource_path)
+    df = yf.Ticker('%s.TW' % i).history(period='max')
     if df.shape[0] == 0:
-        df = yf.Ticker('%s.TWO'%i).history(period = 'max')
-    df.to_csv(path + "/{}.csv".format(i), index=True, sep=',')
+        df = yf.Ticker('%s.TWO' % i).history(period='max')
+    df.to_csv(r'%s/%s.csv' % (resource_path, i), index=0, encoding='big5')
     print(df.shape[0])
-
-
