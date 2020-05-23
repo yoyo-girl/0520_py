@@ -1,0 +1,21 @@
+#融資融券
+import os, requests,pandas as pd
+from bs4 import BeautifulSoup
+
+stock_id = [3008]
+
+for d in stock_id:
+    # resource_path = r'./融資融券/'
+    # if not os.path.exists(resource_path):
+    #     os.mkdir(resource_path)
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
+    url = "https://goodinfo.tw/StockInfo/ShowBearishChart.asp?STOCK_ID=2330&CHT_CAT=DATE"
+    res = requests.get(url, headers=headers)
+    res.encoding = 'utf-8'
+    soup = BeautifulSoup(res.text, 'html.parser')
+    a = soup.select('div[id="divMarginDetail"]')
+    df_list = pd.read_html(str(a[0]))
+    df = pd.DataFrame(df_list[0])
+    print(df)
+
+    #df.to_csv(r'%s/%s.csv' % (resource_path, d), index=0, encoding='utf_8_sig')
