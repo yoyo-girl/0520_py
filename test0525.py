@@ -78,7 +78,8 @@ def main1():
     T = (aaa.create_assist_date())
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36'}
-
+    
+    #date是西元的時間，寫到T迴圈裡是把它改成民國的時間
     for t in T:
         date = datetime.strptime(str(t), '%Y%m%d').strftime('%Y-%m-%d')
         x = t[0:4] + '/' + t[4:6] + '/' + t[6:8]
