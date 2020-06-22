@@ -1,0 +1,95 @@
+import pymysql
+import pandas as pd
+import numpy as np
+from datetime import datetime
+
+#和資料庫建立連線
+db = pymysql.connect(host='0.tcp.ngrok.io',port=10996,user='dbuser3',passwd='aabb1234',db='Project_test')
+cur = db.cursor()
+
+#建立一個字典裝等一下跑出來的績效
+Dict_tw = {}
+
+for stock_x in Stock_tw :
+    sql = 'select * from daily_trade_tw where stockiid={};'.format(stock_x)
+    a = cur.execute(sql)    
+    Data = [i for i in cur.fetchall()]
+    df = pd.DataFrame(np.array(Data))
+
+    #將欄位命名
+    df.columns = ['stock-id','Date','Open','High','Low','Close','Volume']
+
+    Dic_Close = {}
+
+    for count in range(len(df['Date'])):
+        Dic_Close[df['Date'][count]] = df['Close'][count]
+
+    def Moving_Average(interval = 5):
+        L = [l for l in Dic_Close.values()]
+        D = [d for d in Dic_Close.keys()]
+        Dic_MA={}
+        interval  =int(interval)
+        for i in range(len(L)):
+            if i-interval <0:
+                pass
+            else:
+                Dic_MA[D[i]]="{:}".format(sum(L[i-interval:i])/interval)
+        return Dic_MA
+
+    M5 = Moving_Average (interval = 5)
+    M10 = Moving_Average (interval = 10)
+
+    # 把日期(key)取出來
+    m0 = [l for l in M5.keys()]
+    m5 = [l for l in M5.values()]
+    m10 = [l for l in M10.values()]
+
+    #z_G代表第?筆資料是黃金交叉發生的時候
+    #z_D代表第?筆資料是死亡交叉發生的時候
+    z_G = []
+    z_D = []    
+    for i in range(len(df['Date'])):
+        try:
+            x = float(m5[i]) - float(m10[i])
+            y = float(m5[i+1]) - float(m10[i+1])
+            if x < 0 and y>0:
+                z_G.append(i)
+            if x > 0 and y<0:
+                z_D.append(i)
+        except:
+            pass
+
+    Index=0
+    profit = 0
+    TotalProfit= 0
+    c = 0
+    Acc_trade = []
+    Return = 0
+    TotalReturn = 0
+
+    for i in z_G:
+        c += 1
+        #print('第',c,'次交易')
+        Index += 1
+        buy_date = df['Date'][i]
+        buy_price = df['Close'][i]
+        #print('buy',buy_date,buy_price)
+        for j in z_D:
+            if i<j and Index>0:  
+                Index -=1
+                sell_date = df['Date'][j]
+                sell_price = df['Close'][j]
+                #print('sell',sell_date, sell_price)
+                profit = sell_price-buy_price
+                Return = (profit/buy_price)*100
+                TotalReturn += Return
+                #print('獲利', profit)
+                #print('報酬率', '{:.2f}%'.format(Return))
+                #print('===============================')
+                TotalProfit += profit
+                Acc_trade.append(TotalProfit)
+    Dict_tw[stock_x]='{:.2f}%'.format(TotalReturn)
+    df = pd.Series(Dict_tw, Dict_tw.keys()).to_frame()
+    print(stock_x, '{:.2f}%'.format(TotalReturn))
+    
+df.to_csv('./MA_cross_tw.csv')
